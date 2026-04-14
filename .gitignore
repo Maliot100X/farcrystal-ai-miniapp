@@ -1,0 +1,52 @@
+# Dependencies
+node_modules
+.pnpm-store
+
+# Build outputs
+.next
+dist
+build
+*.tsbuildinfo
+
+# Environment
+.env
+.env.local
+.env.*.local
+.env.master
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Testing
+coverage
+.nyc_output
+
+# Hardhat
+cache
+artifacts
+typechain
+typechain-types
+
+# Misc
+.vercel
+.netlify
+*.pem
+
+# Database
+*.db
+*.sqlite
+
+# Prisma
+prisma/migrations/*/
+!prisma/migrations/migration_lock.toml

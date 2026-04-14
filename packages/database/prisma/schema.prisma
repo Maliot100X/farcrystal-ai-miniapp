@@ -1,0 +1,105 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String      @id @default(uuid())
+  fid         Int         @unique
+  username    String
+  displayName String?
+  pfpUrl      String?
+  custodyAddress String?
+  wallet      String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  
+  agents      Agent[]
+  tokens      Token[]
+  gameStats   GameStats?
+  
+  @@index([fid])
+}
+
+model Agent {
+  id           String   @id @default(uuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id])
+  name         String
+  type         String   // trading, social, liquidity, game
+  status       String   @default("active") // active, paused, stopped
+  strategy     String
+  tokenAddress String?
+  
+  performance  Json?    // {trades, profitLoss, winRate}
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  @@index([userId])
+  @@index([status])
+}
+
+model Token {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  
+  name        String
+  symbol      String
+  address     String   @unique
+  decimals    Int      @default(18)
+  totalSupply String
+  
+  creatorFid  Int
+  agentId     String?
+  
+  price       Float?   @default(0)
+  marketCap   Float?   @default(0)
+  
+  status      String   @default("active") // active, paused, deprecated
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([userId])
+  @@index([creatorFid])
+}
+
+model GameStats {
+  id           String   @id @default(uuid())
+  userId       String   @unique
+  user         User     @relation(fields: [userId], references: [id])
+  
+  gamesPlayed  Int      @default(0)
+  gamesWon     Int      @default(0)
+  totalEarned  String   @default("0")
+  currentStreak Int     @default(0)
+  rank         Int?
+  
+  updatedAt    DateTime @updatedAt
+}
+
+model Game {
+  id            String   @id @default(uuid())
+  type          String   // predict, arena, quest
+  title         String
+  description   String
+  rewardPool    String
+  entryFee      String
+  
+  startTime     DateTime
+  endTime       DateTime
+  active        Boolean  @default(true)
+  
+  participants  Int      @default(0)
+  
+  createdAt     DateTime @default(now())
+  
+  @@index([active])
+  @@index([endTime])
+}
